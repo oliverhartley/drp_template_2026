@@ -7,11 +7,7 @@ This file serves as a guide to replicate this project for a new region or a new 
 
 You need to create copies of the two main spreadsheets used in this workflow:
 
-1.  **Source Spreadsheet**: This is the file that contains the list of partners and their emails.
-    *   Action: Make a copy of the source file provided for your region.
-    *   Note the new Spreadsheet ID.
-
-2.  **Master Spreadsheet (Destination)**: This is the file where the scripts run, and it contains the Dashboard, Database, and Score sheets.
+1.  **Master Spreadsheet**: This is the file where the scripts run, and it contains the Dashboard, Database, Score, and **Partners (Source)** sheets.
     *   Action: Make a copy of the master file. This copy will also copy the attached Apps Script project!
     *   Note the new Spreadsheet ID.
 
@@ -24,11 +20,9 @@ Individual decks for each partner will be generated and saved in a specific Goog
 
 ## Step 3: Update the Configuration
 
-Open the `Config_2026_w2.js` file in the Apps Script editor of your *copied* Master Spreadsheet and update the following variables with your new IDs:
+Open the `Config_2026_v3.js` file in the Apps Script editor of your *copied* Master Spreadsheet and update the following variable:
 
-1.  `DESTINATION_SS_ID`: Set this to the ID of your newly copied **Master Spreadsheet**.
-2.  `NEW_SOURCE_SS_ID`: Set this to the ID of your newly copied **Source Spreadsheet**.
-3.  `PARTNER_FOLDER_ID`: Set this to the ID of the new **Drive Folder** you created in Step 2.
+1.  `PARTNER_FOLDER_ID`: Set this to the ID of the new **Drive Folder** you created in Step 2.
 
 ## Step 4: Run the Setup
 

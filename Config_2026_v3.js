@@ -9,10 +9,10 @@
 const PROJECT_ID = "concord-prod"; 
 
 // The Spreadsheet where the scripts run (Destination)
-const DESTINATION_SS_ID = "1jLr4XP86Y2gI150AH74bbw6xYUOWJR_uSdzdCSrESpM"; 
+const DESTINATION_SS_ID = SpreadsheetApp.getActiveSpreadsheet().getId(); 
 
-// New Source Spreadsheet for 2026 Partners
-const NEW_SOURCE_SS_ID = "1Le4eNgO58tb0wvELmyS1TzsrVsY6Jmw1t0e_5NTMfi0";
+// New Source Spreadsheet for 2026 Partners (now the Active Spreadsheet)
+const NEW_SOURCE_SS_ID = DESTINATION_SS_ID;
 const NEW_SHEET_NAME_PARTNER = "Partners";
 
 // Dedicated Spreadsheet for Partner DB

@@ -120,11 +120,13 @@ function runPartnerDbGeneration2026() {
     const existingMap = new Map();
     let existingHeaders = [];
     let colEmails = -1;
+    let colPDM = -1;
     if (existingData.length > 1) {
       existingHeaders = existingData[0].map(h => String(h).trim().toLowerCase());
       const colDomain = existingHeaders.indexOf("domain");
       const colCountry = existingHeaders.indexOf("country");
       colEmails = existingHeaders.indexOf("partner_emails");
+      colPDM = existingHeaders.indexOf("pdm");
       
       for (let i = 1; i < existingData.length; i++) {
         const domain = String(existingData[i][colDomain]).trim().toLowerCase();
@@ -185,7 +187,25 @@ function runPartnerDbGeneration2026() {
       
       if (existingMap.has(key)) {
         const existingRow = existingMap.get(key);
-        const mergedRow = [...newRow];
+        const mergedRow = [...existingRow];
+        
+        // Pad mergedRow if it's shorter than combinedHeaders
+        while (mergedRow.length < combinedHeaders.length) {
+          mergedRow.push("");
+        }
+        
+        // Merge PDM if PDM column was found in existing sheet
+        const existingPDM = colPDM >= 0 ? String(existingRow[colPDM]).trim() : "";
+        const newPDM = String(newRow[3]).trim(); // Index 3 is PDM in SQL
+        
+        const pdmSet = new Set();
+        if (existingPDM) existingPDM.split(',').forEach(p => pdmSet.add(p.trim()));
+        if (newPDM) newPDM.split(',').forEach(p => pdmSet.add(p.trim()));
+        
+        const mergedPDM = Array.from(pdmSet).filter(p => p !== "").join(', ');
+        if (colPDM >= 0) {
+          mergedRow[colPDM] = mergedPDM;
+        }
         
         // Merge emails if email column was found in existing sheet
         const existingEmails = colEmails >= 0 ? String(existingRow[colEmails]).trim() : "";
@@ -196,11 +216,8 @@ function runPartnerDbGeneration2026() {
         if (newEmails) newEmails.split(',').forEach(e => emailsSet.add(e.trim()));
         
         const mergedEmails = Array.from(emailsSet).filter(e => e !== "").join(', ');
-        mergedRow[8] = mergedEmails;
-
-        // Preserve columns from existing row that are beyond BQ headers
-        for (let j = bqHeaders.length; j < combinedHeaders.length; j++) {
-          mergedRow[j] = existingRow[j];
+        if (colEmails >= 0) {
+          mergedRow[colEmails] = mergedEmails;
         }
         mergedData.push(mergedRow);
         existingMap.delete(key); // Mark as processed
