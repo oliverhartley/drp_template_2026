@@ -26,6 +26,7 @@ const SHEET_NAME_2026 = "LATAM_Partner_DB_2026_v3";
 const SHEET_NAME_SCORE_2026 = "LATAM_Partner_Score_2026_v3";
 const SHEET_NAME_DEEPDIVE_2026 = "LATAM_DeepDive_2026_v3";
 const SHEET_NAME_DASHBOARD_2026 = "LATAM_Partner_Dashboard_2026_v3";
+const SHEET_NAME_CONSOLIDATED_DASHBOARD = "Latam DRP Dashboard";
 const SHEET_NAME_CACHE_2026 = "CACHE_Dashboard_2026_v3";
 const DECK_SHEET_NAME = "Tier Dashboard";
 

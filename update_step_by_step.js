@@ -36,8 +36,10 @@ function step_3_updateDeepDive() {
 }
 
 function step_4_recreateDashboard() {
-  Logger.log("Step 4: Recreating Dashboard...");
+  Logger.log("Step 4: Recreating Standard Dashboard...");
   setupDashboard2026();
+  Logger.log("Step 4b: Recreating Consolidated Dashboard...");
+  setupConsolidatedDashboard2026();
 }
 
 function step_5_generateDecks() {

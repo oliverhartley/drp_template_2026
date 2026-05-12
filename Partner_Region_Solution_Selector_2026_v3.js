@@ -100,7 +100,7 @@ function updateDashboardCache2026() {
 /**
  * Reads from the fast cache, applies the slicers, and drops the view.
  */
-function refreshDashboardData2026(dashSheet) {
+function refreshDashboardData2026(dashSheet, isConsolidated = false) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const cacheSheet = ss.getSheetByName(SHEET_NAME_CACHE_2026);
 
@@ -112,12 +112,24 @@ function refreshDashboardData2026(dashSheet) {
 
   // 2. Read Cache
   const cacheRange = cacheSheet.getDataRange();
-  const cacheValues = cacheRange.getValues();
-  const cacheBackgrounds = cacheRange.getBackgrounds();
-  const cacheWeights = cacheRange.getFontWeights();
-  const cacheFontColors = cacheRange.getFontColors(); 
+  let cacheValues = cacheRange.getValues();
+  let cacheBackgrounds = cacheRange.getBackgrounds();
+  let cacheWeights = cacheRange.getFontWeights();
+  let cacheFontColors = cacheRange.getFontColors(); 
 
   if (cacheValues.length < 3) return;
+
+  if (isConsolidated) {
+    const consolidated = consolidateCacheData(cacheValues, cacheBackgrounds, cacheWeights, cacheFontColors);
+    cacheValues = consolidated.values;
+    cacheBackgrounds = consolidated.backgrounds;
+    cacheWeights = consolidated.weights;
+    cacheFontColors = consolidated.fontColors;
+    
+    if (cacheValues.length > 0 && cacheValues[0].length > 8) {
+      cacheValues[0][8] = "Profiles per Partner";
+    }
+  }
 
   const rowSol = cacheValues[0];
   const rowProd = cacheValues[1];
@@ -370,4 +382,128 @@ function refreshDashboardData2026(dashSheet) {
   } else {
     dashSheet.getRange(DATA_START_ROW_2026, 1).setValue("No partners found for this selection.");
   }
+}
+
+/**
+ * Consolidates cache values and formatting by partner (domain), summing scores and merging metadata.
+ */
+function consolidateCacheData(cacheValues, cacheBackgrounds, cacheWeights, cacheFontColors) {
+  if (cacheValues.length < 4) {
+    return { values: cacheValues, backgrounds: cacheBackgrounds, weights: cacheWeights, fontColors: cacheFontColors };
+  }
+
+  const headerValues = cacheValues.slice(0, 3);
+  const headerBackgrounds = cacheBackgrounds.slice(0, 3);
+  const headerWeights = cacheWeights.slice(0, 3);
+  const headerFontColors = cacheFontColors.slice(0, 3);
+
+  const dataValues = cacheValues.slice(3);
+  const dataBackgrounds = cacheBackgrounds.slice(3);
+  const dataWeights = cacheWeights.slice(3);
+  const dataFontColors = cacheFontColors.slice(3);
+
+  const consolidatedMap = new Map();
+
+  for (let i = 0; i < dataValues.length; i++) {
+    const rowV = dataValues[i];
+    const rowB = dataBackgrounds[i];
+    const rowW = dataWeights[i];
+    const rowFC = dataFontColors[i];
+
+    const domain = String(rowV[3]).trim().toLowerCase();
+    if (!domain) continue;
+
+    if (consolidatedMap.has(domain)) {
+      const existing = consolidatedMap.get(domain);
+      
+      // Merge Country
+      const existingCountry = String(existing.values[4]).trim();
+      const newCountry = String(rowV[4]).trim();
+      const countries = new Set();
+      if (existingCountry) existingCountry.split(',').forEach(c => countries.add(c.trim()));
+      if (newCountry) newCountry.split(',').forEach(c => countries.add(c.trim()));
+      existing.values[4] = Array.from(countries).join(', ');
+
+      // Merge Sub Region
+      const existingSubReg = String(existing.values[5]).trim();
+      const newSubReg = String(rowV[5]).trim();
+      const subRegs = new Set();
+      if (existingSubReg) existingSubReg.split(',').forEach(s => subRegs.add(s.trim()));
+      if (newSubReg) newSubReg.split(',').forEach(s => subRegs.add(s.trim()));
+      existing.values[5] = Array.from(subRegs).join(', ');
+
+      // Merge PDM
+      const existingPDM = String(existing.values[6]).trim();
+      const newPDM = String(rowV[6]).trim();
+      const pdms = new Set();
+      if (existingPDM) existingPDM.split(',').forEach(p => pdms.add(p.trim()));
+      if (newPDM) newPDM.split(',').forEach(p => pdms.add(p.trim()));
+      existing.values[6] = Array.from(pdms).join(', ');
+
+      // SUM Profiles
+      existing.values[8] = (Number(existing.values[8]) || 0) + (Number(rowV[8]) || 0);
+
+      // SUM Tiers
+      for (let c = 9; c < rowV.length; c++) {
+        existing.values[c] = (Number(existing.values[c]) || 0) + (Number(rowV[c]) || 0);
+      }
+
+    } else {
+      consolidatedMap.set(domain, {
+        values: [...rowV],
+        backgrounds: [...rowB],
+        weights: [...rowW],
+        fontColors: [...rowFC]
+      });
+    }
+  }
+
+  const consolidatedValues = [...headerValues];
+  const consolidatedBackgrounds = [...headerBackgrounds];
+  const consolidatedWeights = [...headerWeights];
+  const consolidatedFontColors = [...headerFontColors];
+
+  consolidatedMap.forEach(item => {
+    consolidatedValues.push(item.values);
+    consolidatedBackgrounds.push(item.backgrounds);
+    consolidatedWeights.push(item.weights);
+    consolidatedFontColors.push(item.fontColors);
+  });
+
+  return {
+    values: consolidatedValues,
+    backgrounds: consolidatedBackgrounds,
+    weights: consolidatedWeights,
+    fontColors: consolidatedFontColors
+  };
+}
+
+/**
+ * Creates the consolidated dashboard layout.
+ */
+function setupConsolidatedDashboard2026() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME_CONSOLIDATED_DASHBOARD);
+  if (!sheet) { sheet = ss.insertSheet(SHEET_NAME_CONSOLIDATED_DASHBOARD); }
+  sheet.clear();
+  setLoadingStatus2026(sheet, true);
+
+  // Set Header Titles
+  sheet.getRange("A1").setValue("Consolidated DRP Dashboard 2026").setFontWeight("bold").setFontSize(18);
+  sheet.getRange("A2").setValue("Status by partner (Consolidated)").setFontWeight("bold").setFontSize(15);
+  sheet.getRange("A3").setValue("Questions / Feedback: oliverhartley@").setFontWeight("bold").setFontSize(10);
+  
+  const formattedDate = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd-MMM");
+  sheet.getRange("A5").setValue("Last Update: " + formattedDate).setFontWeight("bold").setFontColor("red");
+  
+  // Initialize Cache (if not already updated)
+  updateDashboardCache2026();
+
+  try {
+    refreshDashboardData2026(sheet, true);
+  } catch (e) {
+    sheet.getRange(DATA_START_ROW_2026, 1).setValue("Error loading initial data: " + e.toString());
+  }
+  
+  setLoadingStatus2026(sheet, false);
 }
