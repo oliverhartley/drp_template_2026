@@ -9,31 +9,50 @@
 const SCORING_START_ROW_2026 = 2; // Data starts on row 2
 
 function getScoringSpreadsheetData2026() {
+  // 1. Read allowed domains from internal "Partners" sheet
+  const activeSS = SpreadsheetApp.getActiveSpreadsheet();
+  const sourceSheet = activeSS.getSheetByName(NEW_SHEET_NAME_PARTNER);
+  if (!sourceSheet) throw new Error(`Source sheet "${NEW_SHEET_NAME_PARTNER}" not found.`);
+  
+  const sourceLastRow = sourceSheet.getLastRow();
+  let allowedDomains = new Set();
+  if (sourceLastRow > 1) {
+    const sourceDomains = sourceSheet.getRange(2, 1, sourceLastRow - 1, 1).getValues();
+    sourceDomains.forEach(row => {
+      const dom = String(row[0] || "").trim().toLowerCase();
+      if (dom) allowedDomains.add(dom);
+    });
+  }
+
+  // 2. Read database partners
   const ss = SpreadsheetApp.openById(PARTNER_DB_SS_ID);
   const sheet = ss.getSheetByName(SHEET_NAME_2026);
   if (!sheet) throw new Error(`Sheet "${SHEET_NAME_2026}" not found.`);
   const lastRow = sheet.getLastRow();
   if (lastRow < SCORING_START_ROW_2026) return ""; 
 
-  // Reading Columns A to H
-  // A: Partner Name, B: Country, C: Sub-Region, D: PDM, E: Type, F: Internal ID, G: Partner ID, H: Domain
   const range = sheet.getRange(SCORING_START_ROW_2026, 1, lastRow - SCORING_START_ROW_2026 + 1, 8);
   const values = range.getValues();
 
   let structList = [];
   for (let i = 0; i < values.length; i++) {
     const row = values[i];
-    let partnerName = String(row[0] || "").trim().replace(/[\x00-\x1F\x7F-\x9F\u200B]/g, "");
-    let country     = String(row[1] || "").trim();
-    let subRegion   = String(row[2] || "").trim();
-    let pdm         = String(row[3] || "").trim();
-    let type        = String(row[4] || "").trim();
-    let internalId  = String(row[5] || "").trim();
-    let partnerId   = String(row[6] || "").trim();
-    let domain      = String(row[7] || "").trim();
+    let domain      = String(row[7] || "").trim().toLowerCase();
+    
+    // 3. Filter by allowed domains
+    if (allowedDomains.has(domain)) {
+      let partnerName = String(row[0] || "").trim().replace(/[\x00-\x1F\x7F-\x9F\u200B]/g, "");
+      let country     = String(row[1] || "").trim();
+      let subRegion   = String(row[2] || "").trim();
+      let pdm         = String(row[3] || "").trim();
+      let type        = String(row[4] || "").trim();
+      let internalId  = String(row[5] || "").trim();
+      let partnerId   = String(row[6] || "").trim();
+      let domainOriginal = String(row[7] || "").trim();
 
-    if (internalId && partnerName) {
-      structList.push(`STRUCT('${internalId}' AS internal_id, '${partnerId.replace(/'/g, "\\'")}' AS partner_id, '${partnerName.replace(/'/g, "\\'")}' AS partner_name, '${domain.replace(/'/g, "\\'")}' AS domain, '${country.replace(/'/g, "\\'")}' AS country, '${subRegion.replace(/'/g, "\\'")}' AS sub_region, '${pdm.replace(/'/g, "\\'")}' AS pdm, '${type.replace(/'/g, "\\'")}' AS partner_type)`);
+      if (internalId && partnerName) {
+        structList.push(`STRUCT('${internalId}' AS internal_id, '${partnerId.replace(/'/g, "\\'")}' AS partner_id, '${partnerName.replace(/'/g, "\\'")}' AS partner_name, '${domainOriginal.replace(/'/g, "\\'")}' AS domain, '${country.replace(/'/g, "\\'")}' AS country, '${subRegion.replace(/'/g, "\\'")}' AS sub_region, '${pdm.replace(/'/g, "\\'")}' AS pdm, '${type.replace(/'/g, "\\'")}' AS partner_type)`);
+      }
     }
   }
   return structList.join(',\n');
