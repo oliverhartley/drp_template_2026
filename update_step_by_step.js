@@ -13,8 +13,8 @@ function updateEverything2026() {
   step_1_generateDb();
   step_2_updateScoring();
   step_3_updateDeepDive();
-  step_4_recreateDashboard();
   step_5_generateDecks();
+  step_4_recreateDashboard();
   step_6_sendEmails();
 
   Logger.log(">>> ALL-IN-ONE UPDATE COMPLETE <<<");
