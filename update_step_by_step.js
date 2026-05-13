@@ -13,8 +13,8 @@ function updateEverything2026() {
   step_1_generateDb();
   step_2_updateScoring();
   step_3_updateDeepDive();
-  step_5_generateDecks();
-  step_4_recreateDashboard();
+  step_4_generateDecks();
+  step_5_recreateDashboard();
   step_6_sendEmails();
 
   Logger.log(">>> ALL-IN-ONE UPDATE COMPLETE <<<");
@@ -35,17 +35,17 @@ function step_3_updateDeepDive() {
   runDeepDive2026();
 }
 
-function step_4_recreateDashboard() {
-  Logger.log("Step 4: Recreating Standard Dashboard...");
-  setupDashboard2026();
-  Logger.log("Step 4b: Recreating Consolidated Dashboard...");
-  setupConsolidatedDashboard2026();
-}
-
-function step_5_generateDecks() {
-  Logger.log("Step 5: Updating Partner Decks (Full Batch)...");
+function step_4_generateDecks() {
+  Logger.log("Step 4: Updating Partner Decks (Full Batch)...");
   Logger.log("WARNING: This step might take a long time and could cause timeout.");
   runFullBatchDecks2026();
+}
+
+function step_5_recreateDashboard() {
+  Logger.log("Step 5: Recreating Standard Dashboard...");
+  setupDashboard2026();
+  Logger.log("Step 5b: Recreating Consolidated Dashboard...");
+  setupConsolidatedDashboard2026();
 }
 
 function step_6_sendEmails() {

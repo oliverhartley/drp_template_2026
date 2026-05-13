@@ -9,27 +9,27 @@ To perform operations manually in the Google Apps Script editor, select the spec
 Both of these functions are independent and read from the main DB sheet (`LATAM_Partner_DB_2026`) to query BigQuery. You can run them in any order depending on what you need to update:
 
 - **Option A: Update Scoring Pivot**
-  - File: `Partner_Scoring_2026_w2.js`
+  - File: `Partner_Scoring_2026_v3.js`
   - Function: `runPartnerScorePivot2026()`
   - Description: Runs the BigQuery query to generate the scoring pivot sheet.
 
 - **Option B: Update Profile Deep Dive**
-  - File: `DeepDive_2026_w2.js`
+  - File: `DeepDive_2026_v3.js`
   - Function: `runDeepDive2026()`
   - Description: Runs the BigQuery query to generate the detailed profile deep dive sheet.
 
-### 2. Recreate / Refresh Dashboard
-- File: `Partner_Region_Solution_Selector_2026_w2.js`
-- Function: `setupDashboard2026()` (to initialize/recreate) or `refreshDashboardData2026(dashSheet)` (to update data).
-- Description: Updates or initializes the dashboard view based on the latest data.
-
-### 3. Update Partner Files (Decks)
-- File: `Partner_Individual_Decks_2026_w2.js`
+### 2. Update Partner Files (Decks)
+- File: `Partner_Individual_Decks_2026_v3.js`
 - Function: `runFullBatchDecks2026()`
 - Description: Generates or updates individual decks for all partners in batch.
 
+### 3. Recreate / Refresh Dashboard
+- File: `Partner_Region_Solution_Selector_2026_v3.js`
+- Function: `setupDashboard2026()` (to initialize/recreate) or `refreshDashboardData2026(dashSheet)` (to update data).
+- Description: Updates or initializes the dashboard view based on the latest data.
+
 ### 4. Send Emails
-- File: `Partner_Summary_Email_2026_w2.js`
+- File: `Partner_Summary_Email_2026_v3.js`
 - Function: `runBatchEmailSender2026()`
 - Description: Sends summary emails to partners in batch.
 
