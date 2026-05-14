@@ -23,12 +23,17 @@ Both of these functions are independent and read from the main DB sheet (`LATAM_
 - Function: `runFullBatchDecks2026()`
 - Description: Generates or updates individual decks for all partners in batch.
 
-### 3. Recreate / Refresh Dashboard
+### 3. Share Partner Decks
+- File: `Partner_Share_Decks_2026_v3.js`
+- Function: `runBatchShareDecks2026()`
+- Description: Shares individual partner decks with corresponding PDMs (as Editors) and Partner Emails (as Viewers) in batch.
+
+### 4. Recreate / Refresh Dashboard
 - File: `Partner_Region_Solution_Selector_2026_v3.js`
 - Function: `setupDashboard2026()` (to initialize/recreate) or `refreshDashboardData2026(dashSheet)` (to update data).
 - Description: Updates or initializes the dashboard view based on the latest data.
 
-### 4. Send Emails
+### 5. Send Emails
 - File: `Partner_Summary_Email_2026_v3.js`
 - Function: `runBatchEmailSender2026()`
 - Description: Sends summary emails to partners in batch.

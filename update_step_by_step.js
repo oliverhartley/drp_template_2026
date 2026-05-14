@@ -14,8 +14,9 @@ function updateEverything2026() {
   step_2_updateScoring();
   step_3_updateDeepDive();
   step_4_generateDecks();
-  step_5_recreateDashboard();
-  step_6_sendEmails();
+  step_5_shareDecks();
+  step_6_recreateDashboard();
+  step_7_sendEmails();
 
   Logger.log(">>> ALL-IN-ONE UPDATE COMPLETE <<<");
 }
@@ -41,15 +42,20 @@ function step_4_generateDecks() {
   runFullBatchDecks2026();
 }
 
-function step_5_recreateDashboard() {
-  Logger.log("Step 5: Recreating Standard Dashboard...");
+function step_5_shareDecks() {
+  Logger.log("Step 5: Sharing Partner Decks with PDMs & Partners (Full Batch)...");
+  runBatchShareDecks2026();
+}
+
+function step_6_recreateDashboard() {
+  Logger.log("Step 6: Recreating Standard Dashboard...");
   setupDashboard2026();
-  Logger.log("Step 5b: Recreating Consolidated Dashboard...");
+  Logger.log("Step 6b: Recreating Consolidated Dashboard...");
   setupConsolidatedDashboard2026();
 }
 
-function step_6_sendEmails() {
-  Logger.log("Step 6: Sending Emails (Full Batch)...");
+function step_7_sendEmails() {
+  Logger.log("Step 7: Sending Emails (Full Batch)...");
   Logger.log("WARNING: This step might also take a long time.");
   runBatchEmailSender2026();
 }
