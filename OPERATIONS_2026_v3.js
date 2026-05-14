@@ -26,7 +26,7 @@ Both of these functions are independent and read from the main DB sheet (`LATAM_
 ### 3. Share Partner Decks
 - File: `Partner_Share_Decks_2026_v3.js`
 - Function: `runBatchShareDecks2026()`
-- Description: Shares individual partner decks with corresponding PDMs (as Editors) and Partner Emails (as Viewers) in batch.
+- Description: Shares individual partner decks with corresponding PDMs (as Editors) and Partner Emails (as Editors) in batch.
 
 ### 4. Recreate / Refresh Dashboard
 - File: `Partner_Region_Solution_Selector_2026_v3.js`

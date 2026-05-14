@@ -3,7 +3,7 @@
  * Google Apps Script - Partner Deck Share 2026
  * File: Partner_Share_Decks_2026_v3.js
  * Description: Shares individual partner decks with corresponding PDMs (as Editors)
- * and Partner Emails (as Viewers) in batch.
+ * and Partner Emails (as Editors) in batch.
  * ****************************************
  */
 
@@ -137,13 +137,13 @@ function runBatchShareDecks2026() {
         }
       });
 
-      // Add Partner Emails as Viewers
+      // Add Partner Emails as Editors
       pData.partnerEmails.forEach(email => {
         try {
-          file.addViewer(email);
-          Logger.log(`  Added Partner Viewer: ${email}`);
+          file.addEditor(email);
+          Logger.log(`  Added Partner Editor: ${email}`);
         } catch (shareErr) {
-          Logger.log(`  ERROR adding Partner Viewer ${email}: ${shareErr.toString()}`);
+          Logger.log(`  ERROR adding Partner Editor ${email}: ${shareErr.toString()}`);
         }
       });
 
